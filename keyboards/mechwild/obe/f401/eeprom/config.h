@@ -17,4 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#define EEPROM_I2C_24LC64
+// #define USE_I2C
+#define EE_HANDS
+#define PERMISSIVE_HOLD
+#define IGNORE_MOD_TAP_INTERRUPT
