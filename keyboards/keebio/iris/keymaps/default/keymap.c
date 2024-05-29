@@ -14,7 +14,26 @@ enum custom_keycodes {
     NUMBERS = SAFE_RANGE,
     NAV,
     SYMBOLS,
+    MACRO_LAYER_TOGGLE_LAYOUT,
+    MACRO_LAYER_TOGGLE_LAYOUT_LANGUAGE
 };
+
+enum combo_events {
+    COMBO_MACRO_LAYER_TOGGLE_LAYOUT_LANGUAGE,
+    COMBO_MACRO_LAYER_TOGGLE_LAYOUT,
+    COMBO_LENGTH  // This represents the number of combos
+};
+
+const uint16_t PROGMEM combo_macro_layer_toggle_layout_language[] = {KC_Q, KC_W, COMBO_END};
+const uint16_t PROGMEM combo_macro_layer_toggle_layout[] = {KC_Z, KC_X, COMBO_END};
+
+// Create an array of combos
+combo_t key_combos[COMBO_LENGTH] = {
+    [COMBO_MACRO_LAYER_TOGGLE_LAYOUT_LANGUAGE] = COMBO(combo_macro_layer_toggle_layout_language, MACRO_LAYER_TOGGLE_LAYOUT_LANGUAGE),
+    [COMBO_MACRO_LAYER_TOGGLE_LAYOUT] = COMBO(combo_macro_layer_toggle_layout, MACRO_LAYER_TOGGLE_LAYOUT),
+};
+
+static bool in_colemak = false;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -117,6 +136,38 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         layer_on(_SYMBOLS);
       } else {
         layer_off(_SYMBOLS);
+      }
+      return false;
+      break;
+    case MACRO_LAYER_TOGGLE_LAYOUT:
+      if (record->event.pressed) {
+        if (in_colemak) {
+          layer_off(_COLEMAK);
+          in_colemak = false;
+        } else {
+          layer_on(_COLEMAK);
+          in_colemak = true;
+        }
+      }
+      return false;
+      break;
+    case MACRO_LAYER_TOGGLE_LAYOUT_LANGUAGE:
+      if (record->event.pressed) {
+        if (in_colemak) {
+          layer_off(_COLEMAK);
+          in_colemak = false;
+        } else {
+          layer_on(_COLEMAK);
+          in_colemak = true;
+        }
+        register_code(KC_LCTL);
+        register_code(KC_LALT);
+        register_code(KC_LGUI);
+        register_code(KC_SPC);
+        unregister_code(KC_SPC);
+        unregister_code(KC_LGUI);
+        unregister_code(KC_LALT);
+        unregister_code(KC_LCTL);
       }
       return false;
       break;
