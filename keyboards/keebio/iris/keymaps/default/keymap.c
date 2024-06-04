@@ -47,7 +47,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    _______,          _______,  KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                     _______, NUMBERS, KC_SPC,                    KC_ENT,    NAV,   _______
+                                     _______, LT(_NUMBERS, KC_BSPC), LT(_SYMBOLS, KC_SPC),                    KC_T,    LT(_NAV, KC_ENT),   _______
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   ),
 
@@ -111,34 +111,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
-    case NUMBERS:
-      if (record->event.pressed) {
-        layer_on(_NUMBERS);
-        update_tri_layer(_NUMBERS, _NAV, _SYMBOLS);
-      } else {
-        layer_off(_NUMBERS);
-        update_tri_layer(_NUMBERS, _NAV, _SYMBOLS);
-      }
-      return false;
-      break;
-    case NAV:
-      if (record->event.pressed) {
-        layer_on(_NAV);
-        update_tri_layer(_NUMBERS, _NAV, _SYMBOLS);
-      } else {
-        layer_off(_NAV);
-        update_tri_layer(_NUMBERS, _NAV, _SYMBOLS);
-      }
-      return false;
-      break;
-    case SYMBOLS:
-      if (record->event.pressed) {
-        layer_on(_SYMBOLS);
-      } else {
-        layer_off(_SYMBOLS);
-      }
-      return false;
-      break;
     case MACRO_LAYER_TOGGLE_LAYOUT:
       if (record->event.pressed) {
         if (in_colemak) {

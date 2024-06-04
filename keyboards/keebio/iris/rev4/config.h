@@ -26,3 +26,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define TAPPING_TERM 200 // TAP VS HOLD timing in milliseconds
 // Pick good defaults for enabling homerow modifiers
 #define PERMISSIVE_HOLD
+#define COMBO_TERM 20
