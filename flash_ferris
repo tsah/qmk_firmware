@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -e
+
+sudo avrdude -c avr109 -p m32u4 -P /dev/tty.usbmodem144201 -U flash:w:ferris_sweep_default.hex:i -v
