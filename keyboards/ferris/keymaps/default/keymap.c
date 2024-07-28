@@ -14,50 +14,66 @@ enum custom_keycodes {
     M_UEN,
     M_ENT,
     M_ION,
-    M_ON
+    M_ON,
+    M_BASE_SPC,
+    M_ALT_SPC,
+    M_BASE_ENT,
+    M_ALT_ENT
+};
+
+// Combos
+// Right mods
+const uint16_t PROGMEM c_hj[] = {KC_H, KC_J, COMBO_END};
+const uint16_t PROGMEM c_fg[] = {KC_F, KC_G, COMBO_END};
+
+combo_t key_combos[] = {
+    COMBO(c_hj, KC_ENT),
+    COMBO(c_fg, KC_SPC),
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // Main
 	[0] = LAYOUT_split_3x5_2(
-        KC_Q, KC_W, KC_E, KC_R, KC_T,                                KC_Y, KC_U, KC_I, KC_O, KC_P,
-    LSFT_T(KC_A), LCTL_T(KC_S), LALT_T(KC_D), LGUI_T(KC_F), KC_G,      KC_H, RGUI_T(KC_J), RALT_T(KC_K), RCTL_T(KC_L), RSFT_T(KC_SCLN),
-        KC_Z, KC_X, KC_C, KC_V, KC_B,                                KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH,
-                                              MO(2) , KC_SPC,       KC_ENT, MO(3)
+        KC_Q, KC_W, KC_E, KC_R, KC_T,                                       KC_Y, KC_U, KC_I, KC_O, KC_P,
+        KC_A, KC_S, KC_D, KC_F, KC_G,                                       KC_H, KC_J, KC_K, KC_L, KC_SCLN,
+        LSFT_T(KC_Z), LCTL_T(KC_X), LALT_T(KC_C), LGUI_T(KC_V), KC_B,       KC_N, RGUI_T(KC_M), RALT_T(KC_COMM), RCTL_T(KC_DOT), RSFT_T(KC_SLSH),
+                                              MO(2) , MO(5),            MO(4), MO(3)
     ),
     // Alternative - Sturdy
 	[1] = LAYOUT_split_3x5_2(
-        KC_V, KC_M, KC_L, KC_C, KC_P,                                   KC_B, QK_ALT_REPEAT_KEY, KC_O, KC_U, KC_B,
-    LSFT_T(KC_S), LCTL_T(KC_T), LALT_T(KC_R), LGUI_T(KC_D), KC_Y,       KC_F, RGUI_T(KC_N), RALT_T(KC_A), RCTL_T(KC_E), RSFT_T(KC_I),
-        KC_X, KC_K, KC_J, KC_G, KC_W,                                   KC_Z, KC_H, KC_COMM, KC_DOT, KC_SCLN,
+        KC_V, KC_M, KC_L, KC_C, KC_P,                                   KC_X, KC_F, KC_O, KC_U, KC_J,
+        KC_S, KC_T, KC_R, KC_D, KC_Y,                                   KC_DOT, KC_N, KC_A, KC_E, KC_I,
+        LSFT_T(KC_Z), LCTL_T(KC_K), LALT_T(KC_Q), LGUI_T(KC_G), KC_W,   KC_B, RGUI_T(KC_H), RALT_T(KC_QUOT), RCTL_T(KC_SCLN), RSFT_T(KC_COMM),
                                               MO(2) , KC_SPC,       KC_ENT, MO(3)
     ),
     // Numbers/Symbols
 	[2] = LAYOUT_split_3x5_2(
-        TO(1), TO(2), KC_TRNS, KC_BSLS, KC_LBRC,                KC_RBRC, KC_1, KC_2, KC_3, KC_TRNS,
-        KC_PIPE, KC_GRV, KC_TAB, KC_ESC, KC_LPRN,                  KC_RPRN, KC_4, KC_5, KC_6, KC_0,
-        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LCBR,                 KC_RCBR, KC_7, KC_8, KC_9, KC_TRNS,
+        TO(1), TO(2), KC_TRNS, KC_BSLS, KC_LBRC,                    KC_RBRC, KC_1, KC_2, KC_3, KC_TRNS,
+        KC_PIPE, KC_GRV, KC_TAB, KC_ESC, KC_LPRN,                   KC_RPRN, KC_4, KC_5, KC_6, KC_0,
+        KC_TRNS, KC_TRNS, KC_TRNS, LSFT(LGUI(KC_V)), KC_LCBR,                KC_RCBR, KC_7, KC_8, KC_9, KC_DOT,
                                     KC_TRNS, KC_TRNS,           KC_DEL, KC_LSFT
     ),
     // Nav/Symbols
 	[3] = LAYOUT_split_3x5_2(
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                KC_HOME,  KC_PGDN, KC_PGUP, KC_END, KC_QUOT,
-        KC_MINS, KC_PLUS, KC_UNDS, KC_EQL, KC_UNDS,                  KC_LEFT,  KC_DOWN, KC_UP, KC_RIGHT, KC_DQT,
+        KC_MINS, KC_PLUS, KC_UNDS, KC_EQL, KC_UNDS,                 KC_LEFT,  KC_DOWN, KC_UP, KC_RIGHT, KC_DQT,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
                                     KC_TRNS, KC_BSPC,              KC_TRNS, KC_TRNS
     ),
+    // Right Mods
 	[4] = LAYOUT_split_3x5_2(
-        KC_TRNS, KC_COLN, KC_LT, KC_GT, KC_SCLN,                 KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-        KC_LCBR, KC_RCBR, KC_LPRN, KC_RPRN, KC_AT,                  KC_TRNS, KC_NO, KC_EQL, KC_PLUS, KC_PERC,
-        KC_TRNS, KC_EXLM, KC_LBRC, KC_RBRC, KC_TRNS,                KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-                                    KC_VOLD, KC_TRNS,           KC_TRNS, KC_VOLU
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                            KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                        KC_TRNS, OSM(MOD_RGUI), OSM(MOD_RALT), OSM(MOD_RCTL), OSM(MOD_RSFT),
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                            KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+                                    KC_TRNS, KC_SPC,                         KC_TRNS, KC_TRNS
     ),
+    // Left Mods
 	[5] = LAYOUT_split_3x5_2(
-        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                KC_TRNS, KC_F7, KC_F8, KC_F9, KC_F10,
-        KC_TRNS, KC_NO, LCTL(KC_LALT), KC_TRNS,                     KC_TRNS, KC_TRNS, KC_F4, KC_F5, KC_F6,
-        KC_F11, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                 KC_TRNS, KC_TRNS, KC_F1, KC_F2, KC_F3,
-                                    KC_F12, KC_TRNS,            KC_TRNS, KC_TRNS
-        , KC_TRNS),
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                            KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        OSM(MOD_LSFT), OSM(MOD_LCTL), OSM(MOD_LALT), OSM(MOD_LGUI), KC_TRNS,    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                            KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+                                    KC_TRNS, KC_TRNS,                         KC_ENT, KC_TRNS
+    ),
 	[6] = LAYOUT_split_3x5_2(
         KC_PSLS, KC_7, KC_8, KC_9, KC_PPLS,              KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
         KC_0, KC_1, KC_2, KC_3, KC_PMNS,                    KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_TRNS,
@@ -114,8 +130,3 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 
 };
 #endif // defined(ENCODER_ENABLE) && defined(ENCODER_MAP_ENABLE)
-
-
-
-
-
