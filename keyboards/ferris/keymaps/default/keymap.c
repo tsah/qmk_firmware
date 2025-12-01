@@ -50,14 +50,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	[2] = LAYOUT_split_3x5_2(
         TO(1), TO(2), KC_TRNS, KC_BSLS, KC_LBRC,                    KC_RBRC, KC_1, KC_2, KC_3, KC_TRNS,
         KC_PIPE, KC_GRV, KC_TAB, KC_ESC, KC_LPRN,                   KC_RPRN, KC_4, KC_5, KC_6, KC_0,
-        KC_TRNS, KC_TRNS, LCTL(LALT(LGUI(KC_SPC))), LSFT(LGUI(KC_V)), KC_LCBR,       KC_RCBR, KC_7, KC_8, KC_9, KC_DOT,
+        KC_KB_VOLUME_DOWN, KC_KB_VOLUME_UP, LCTL(LALT(LGUI(KC_SPC))), LSFT(LGUI(KC_V)), KC_LCBR,       KC_RCBR, KC_7, KC_8, KC_9, KC_DOT,
                                     KC_TRNS, KC_TRNS,           KC_DEL, KC_LSFT
     ),
     // Nav/Symbols
 	[3] = LAYOUT_split_3x5_2(
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                KC_HOME,  KC_PGDN, KC_PGUP, KC_END, KC_QUOT,
         KC_MINS, KC_PLUS, KC_UNDS, KC_EQL, KC_UNDS,                 KC_LEFT,  KC_DOWN, KC_UP, KC_RIGHT, KC_DQT,
-        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                KC_TRNS, KC_PRINT_SCREEN, KC_TRNS, KC_TRNS, KC_TRNS,
                                     KC_TRNS, KC_BSPC,              KC_TRNS, KC_TRNS
     ),
     // Mods
