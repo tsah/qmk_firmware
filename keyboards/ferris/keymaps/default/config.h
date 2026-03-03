@@ -35,7 +35,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Pick good defaults for enabling homerow modifiers
 #define TAPPING_TERM 200
 #define QUICK_TAP_TERM 175
-#define BILATERAL_COMBINATIONS
+#define CHORDAL_HOLD
+#define PERMISSIVE_HOLD
 
 // Underglow configuration
 #ifdef RGBLIGHT_ENABLE
