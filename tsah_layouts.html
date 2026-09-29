@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>tsah QMK Layouts</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101217;
+      --panel: #181c25;
+      --key: #242b38;
+      --key-alt: #2f3a4c;
+      --accent: #8bd5ff;
+      --accent-2: #a6e3a1;
+      --text: #eef2f8;
+      --muted: #9aa7b8;
+      --border: #3a4558;
+      --shadow: rgba(0, 0, 0, 0.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #1c2838, var(--bg) 42rem);
+      color: var(--text);
+    }
+
+    main {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 32px 0 48px;
+    }
+
+    header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(2rem, 6vw, 4.5rem);
+      line-height: 0.92;
+      letter-spacing: -0.08em;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px;
+      margin-bottom: 22px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: color-mix(in srgb, var(--panel), transparent 8%);
+      box-shadow: 0 18px 50px var(--shadow);
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      min-width: 220px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    select {
+      appearance: none;
+      width: 100%;
+      padding: 12px 42px 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      background: linear-gradient(135deg, var(--key), var(--panel));
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    button {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: var(--text);
+      background: var(--key);
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button[aria-selected="true"] {
+      border-color: color-mix(in srgb, var(--accent), white 10%);
+      background: linear-gradient(135deg, #214a68, #233348);
+      color: white;
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent), transparent 72%);
+    }
+
+    .board-wrap {
+      overflow-x: auto;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: color-mix(in srgb, var(--panel), transparent 5%);
+      box-shadow: 0 18px 50px var(--shadow);
+    }
+
+    .keyboard {
+      display: grid;
+      grid-template-columns: 1fr minmax(36px, 0.24fr) 1fr;
+      gap: clamp(22px, 5vw, 72px);
+      min-width: 720px;
+      align-items: start;
+    }
+
+    .half {
+      display: grid;
+      gap: 10px;
+    }
+
+    .row {
+      display: grid;
+      gap: 8px;
+    }
+
+    .corne .row { grid-template-columns: repeat(7, minmax(62px, 1fr)); }
+    .ferris .row { grid-template-columns: repeat(5, minmax(68px, 1fr)); }
+    .thumbs { align-items: end; }
+    .corne .thumbs.left { grid-template-columns: 1fr repeat(3, minmax(62px, 1fr)); }
+    .corne .thumbs.right { grid-template-columns: repeat(3, minmax(62px, 1fr)) 1fr; }
+    .ferris .thumbs.left { grid-template-columns: 2fr repeat(2, minmax(68px, 1fr)); }
+    .ferris .thumbs.right { grid-template-columns: repeat(2, minmax(68px, 1fr)) 2fr; }
+    .w3w6 .row { grid-template-columns: repeat(5, minmax(68px, 1fr)); }
+    .w3w6 .thumbs.left { grid-template-columns: 1fr repeat(3, minmax(68px, 1fr)); }
+    .w3w6 .thumbs.right { grid-template-columns: repeat(3, minmax(68px, 1fr)) 1fr; }
+
+    .spacer { min-height: 1px; }
+
+    .key {
+      display: grid;
+      place-items: center;
+      min-height: 58px;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: linear-gradient(180deg, var(--key-alt), var(--key));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 16px var(--shadow);
+      text-align: center;
+      font-weight: 700;
+      line-height: 1.15;
+      white-space: pre-line;
+    }
+
+    .key.empty {
+      color: var(--muted);
+      background: #1b202b;
+      border-style: dashed;
+      font-weight: 600;
+    }
+
+    .key.layer {
+      border-color: color-mix(in srgb, var(--accent), var(--border) 45%);
+      background: linear-gradient(180deg, #284661, #223144);
+    }
+
+    .key.mod {
+      border-color: color-mix(in srgb, var(--accent-2), var(--border) 45%);
+      background: linear-gradient(180deg, #2d4937, #223128);
+    }
+
+    .meta {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+      color: var(--muted);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .pill {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    @media (max-width: 760px) {
+      main { width: min(100vw - 18px, 1200px); padding-top: 18px; }
+      header { display: block; }
+      .controls { align-items: stretch; }
+      label { width: 100%; }
+      .board-wrap { padding: 10px; border-radius: 18px; }
+      .keyboard { min-width: 680px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>tsah layouts</h1>
+        <p>Choose a keyboard and layer to inspect the active QMK layout.</p>
+      </div>
+    </header>
+
+    <section class="controls" aria-label="Layout controls">
+      <label>
+        Keyboard
+        <select id="keyboardSelect"></select>
+      </label>
+      <div class="tabs" id="layerTabs" role="tablist" aria-label="Layers"></div>
+    </section>
+
+    <section class="board-wrap">
+      <div id="keyboard" class="keyboard"></div>
+      <div class="meta">
+        <p id="notes"></p>
+        <div class="legend">
+          <span class="pill">Blue: layer access</span>
+          <span class="pill">Green: mod-tap</span>
+          <span class="pill">__ / NO: transparent or disabled</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const layers = ["QWERTY", "STURDY", "NUM", "NAV", "FUN", "MOUSE"];
+
+    const layouts = {
+      corne: {
+        name: "Corne tsah",
+        shape: "corne",
+        notes: "Corne uses 3 thumb keys per side: MOUSE, NUM, Space / Enter, NAV, FUN.",
+        layers: {
+          QWERTY: {
+            left: [["NO", "Q", "W", "E", "R", "T", "Vol-"], ["NO", "Sft/A", "Ctl/S", "Alt/D", "Gui/F", "G", "Vol+"], ["NO", "Z", "X", "C", "V", "B", null]],
+            right: [["Mute", "Y", "U", "I", "O", "P", "NO"], ["PScr", "H", "Gui/J", "Alt/K", "Ctl/L", "Sft/;", "NO"], [null, "N", "M", ",", ".", "/", "NO"]],
+            leftThumbs: ["MOUSE", "NUM", "Space"],
+            rightThumbs: ["Enter", "NAV", "FUN"]
+          },
+          STURDY: {
+            left: [["NO", "V", "M", "L", "C", "P", "Vol-"], ["NO", "Sft/S", "Ctl/T", "Alt/R", "Gui/D", "Y", "Vol+"], ["NO", "Z", "K", "Q", "G", "W", null]],
+            right: [["Mute", "X", "F", "O", "U", "J", "NO"], ["PScr", ".", "Gui/N", "Alt/A", "Ctl/E", "Sft/I", "NO"], [null, "B", "H", "'", ";", ",", "NO"]],
+            leftThumbs: ["MOUSE", "NUM", "Space"],
+            rightThumbs: ["Enter", "NAV", "FUN"]
+          },
+          NUM: {
+            left: [["__", "__", "__", "__", "\\", "[", "__"], ["__", "|", "`", "Tab", "Esc", "(", "__"], ["__", "__", "__", "Play", "Mute", "{", null]],
+            right: [["__", "]", "1", "2", "3", "__", "__"], ["__", ")", "4", "5", "6", "0", "__"], [null, "}", "7", "8", "9", ".", "__"]],
+            leftThumbs: ["__", "NUM", "__"],
+            rightThumbs: ["Del", "Shift", "__"]
+          },
+          NAV: {
+            left: [["__", "__", "__", "__", "__", "__", "__"], ["__", "-", "+", "_", "=", "__", "__"], ["__", "__", "__", "__", "__", "__", null]],
+            right: [["__", "Home", "PgDn", "PgUp", "End", "'", "__"], ["__", "Left", "Down", "Up", "Right", "\"", "__"], [null, "__", "__", "__", "__", "__", "__"]],
+            leftThumbs: ["__", "__", "Bksp"],
+            rightThumbs: ["__", "NAV", "__"]
+          },
+          FUN: {
+            left: [["TO QWERTY", "__", "RGB Tog", "RGB Mode", "__", "__", "__"], ["TO STURDY", "__", "Hue+", "Sat+", "Val+", "__", "__"], ["__", "__", "Hue-", "Sat-", "Val-", "__", null]],
+            right: [["__", "__", "F1", "F2", "F3", "F10", "__"], ["__", "__", "F4", "F5", "F6", "F11", "__"], [null, "__", "F7", "F8", "F9", "F12", "__"]],
+            leftThumbs: ["__", "__", "__"],
+            rightThumbs: ["__", "__", "FUN"]
+          },
+          MOUSE: {
+            left: [["__", "__", "__", "__", "__", "__", "__"], ["__", "__", "__", "__", "__", "__", "__"], ["__", "__", "__", "__", "__", "__", null]],
+            right: [["__", "__", "Wheel Down", "Wheel Up", "__", "__", "__"], ["__", "Mouse Left", "Mouse Down", "Mouse Up", "Mouse Right", "Wheel Right", "__"], [null, "__", "Wheel Left", "Btn1", "Btn3", "Btn2", "__"]],
+            leftThumbs: ["MOUSE", "__", "__"],
+            rightThumbs: ["Btn1", "Btn2", "__"]
+          }
+        }
+      },
+      ferris: {
+        name: "Ferris Sweep tsah",
+        shape: "ferris",
+        notes: "Ferris has fewer thumbs: NUM, Space/MOUSE / Enter/FUN, NAV.",
+        layers: {
+          QWERTY: {
+            left: [["Q", "W", "E", "R", "T"], ["Sft/A", "Ctl/S", "Alt/D", "Gui/F", "G"], ["Z", "X", "C", "V", "B"]],
+            right: [["Y", "U", "I", "O", "P"], ["H", "Gui/J", "Alt/K", "Ctl/L", "Sft/;"], ["N", "M", ",", ".", "/"]],
+            leftThumbs: ["NUM", "Space\nMOUSE"],
+            rightThumbs: ["Enter\nFUN", "NAV"]
+          },
+          STURDY: {
+            left: [["V", "M", "L", "C", "P"], ["Sft/S", "Ctl/T", "Alt/R", "Gui/D", "Y"], ["Z", "K", "Q", "G", "W"]],
+            right: [["X", "F", "O", "U", "J"], [".", "Gui/N", "Alt/A", "Ctl/E", "Sft/I"], ["B", "H", "'", ";", ","]],
+            leftThumbs: ["NUM", "Space\nMOUSE"],
+            rightThumbs: ["Enter\nFUN", "NAV"]
+          },
+          NUM: {
+            left: [["__", "__", "__", "\\", "["], ["|", "`", "Tab", "Esc", "("], ["Vol-", "Vol+", "Play", "Mute", "{"]],
+            right: [["]", "1", "2", "3", "__"], [")", "4", "5", "6", "0"], ["}", "7", "8", "9", "."]],
+            leftThumbs: ["NUM", "__"],
+            rightThumbs: ["Del", "Shift"]
+          },
+          NAV: {
+            left: [["__", "__", "__", "__", "__"], ["-", "+", "_", "=", "__"], ["__", "__", "PScr", "__", "__"]],
+            right: [["Home", "PgDn", "PgUp", "End", "'"], ["Left", "Down", "Up", "Right", "\""], ["__", "__", "__", "__", "__"]],
+            leftThumbs: ["MOUSE", "Bksp"],
+            rightThumbs: ["__", "NAV"]
+          },
+          FUN: {
+            left: [["Boot", "__", "__", "__", "__"], ["TO QWERTY", "TO STURDY", "__", "__", "__"], ["__", "__", "__", "__", "__"]],
+            right: [["__", "F1", "F2", "F3", "F10"], ["__", "F4", "F5", "F6", "F11"], ["__", "F7", "F8", "F9", "F12"]],
+            leftThumbs: ["__", "__"],
+            rightThumbs: ["FUN", "__"]
+          },
+          MOUSE: {
+            left: [["__", "__", "__", "__", "__"], ["__", "__", "__", "__", "__"], ["__", "__", "__", "__", "__"]],
+            right: [["__", "Wheel Down", "Wheel Up", "__", "__"], ["Mouse Left", "Mouse Down", "Mouse Up", "Mouse Right", "Wheel Right"], ["Wheel Left", "Btn1", "Btn3", "Btn2", "__"]],
+            leftThumbs: ["__", "MOUSE"],
+            rightThumbs: ["Btn1", "Btn2"]
+          }
+        }
+      },
+      w3w6: {
+        name: "Keebart 3w6 Pro tsah",
+        shape: "w3w6",
+        notes: "3w6 Pro is the Corne layout on 3x5+3: same thumbs (MOUSE, NUM, Space / Enter, NAV, FUN). Vol-/Vol+ live on NUM, PScr on NAV, layout switches on FUN.",
+        layers: {
+          QWERTY: {
+            left: [["Q", "W", "E", "R", "T"], ["Sft/A", "Ctl/S", "Alt/D", "Gui/F", "G"], ["Z", "X", "C", "V", "B"]],
+            right: [["Y", "U", "I", "O", "P"], ["H", "Gui/J", "Alt/K", "Ctl/L", "Sft/;"], ["N", "M", ",", ".", "/"]],
+            leftThumbs: ["MOUSE", "NUM", "Space"],
+            rightThumbs: ["Enter", "NAV", "FUN"]
+          },
+          STURDY: {
+            left: [["V", "M", "L", "C", "P"], ["Sft/S", "Ctl/T", "Alt/R", "Gui/D", "Y"], ["Z", "K", "Q", "G", "W"]],
+            right: [["X", "F", "O", "U", "J"], [".", "Gui/N", "Alt/A", "Ctl/E", "Sft/I"], ["B", "H", "'", ";", ","]],
+            leftThumbs: ["MOUSE", "NUM", "Space"],
+            rightThumbs: ["Enter", "NAV", "FUN"]
+          },
+          NUM: {
+            left: [["__", "__", "__", "\\", "["], ["|", "`", "Tab", "Esc", "("], ["Vol-", "Vol+", "Play", "Mute", "{"]],
+            right: [["]", "1", "2", "3", "__"], [")", "4", "5", "6", "0"], ["}", "7", "8", "9", "."]],
+            leftThumbs: ["__", "NUM", "__"],
+            rightThumbs: ["Del", "Shift", "__"]
+          },
+          NAV: {
+            left: [["__", "__", "__", "__", "__"], ["-", "+", "_", "=", "__"], ["__", "__", "PScr", "__", "__"]],
+            right: [["Home", "PgDn", "PgUp", "End", "'"], ["Left", "Down", "Up", "Right", "\""], ["__", "__", "__", "__", "__"]],
+            leftThumbs: ["__", "__", "Bksp"],
+            rightThumbs: ["__", "NAV", "__"]
+          },
+          FUN: {
+            left: [["TO QWERTY", "RGB Tog", "RGB Mode", "__", "__"], ["TO STURDY", "Hue+", "Sat+", "Val+", "__"], ["__", "Hue-", "Sat-", "Val-", "__"]],
+            right: [["__", "F1", "F2", "F3", "F10"], ["__", "F4", "F5", "F6", "F11"], ["__", "F7", "F8", "F9", "F12"]],
+            leftThumbs: ["__", "__", "__"],
+            rightThumbs: ["__", "__", "FUN"]
+          },
+          MOUSE: {
+            left: [["__", "__", "__", "__", "__"], ["__", "__", "__", "__", "__"], ["__", "__", "__", "__", "__"]],
+            right: [["__", "Wheel Down", "Wheel Up", "__", "__"], ["Mouse Left", "Mouse Down", "Mouse Up", "Mouse Right", "Wheel Right"], ["__", "Wheel Left", "Btn1", "Btn3", "Btn2"]],
+            leftThumbs: ["MOUSE", "__", "__"],
+            rightThumbs: ["Btn1", "Btn2", "__"]
+          }
+        }
+      }
+    };
+
+    const keyboardSelect = document.querySelector("#keyboardSelect");
+    const layerTabs = document.querySelector("#layerTabs");
+    const keyboardEl = document.querySelector("#keyboard");
+    const notesEl = document.querySelector("#notes");
+
+    let currentKeyboard = "corne";
+    let currentLayer = "QWERTY";
+
+    function classify(label) {
+      if (label === null) return "";
+      if (["__", "NO"].includes(label)) return "empty";
+      if (/NUM|NAV|FUN|MOUSE|TO |Boot/.test(label)) return "layer";
+      if (/Sft|Ctl|Alt|Gui/.test(label)) return "mod";
+      return "";
+    }
+
+    function key(label) {
+      if (label === null) return spacer();
+      const div = document.createElement("div");
+      div.className = `key ${classify(label)}`.trim();
+      div.textContent = label;
+      return div;
+    }
+
+    function spacer() {
+      const div = document.createElement("div");
+      div.className = "spacer";
+      return div;
+    }
+
+    function row(values) {
+      const div = document.createElement("div");
+      div.className = "row";
+      values.forEach(value => div.appendChild(key(value)));
+      return div;
+    }
+
+    function thumbRow(values, side, shape) {
+      const div = document.createElement("div");
+      div.className = `row thumbs ${side}`;
+      if (side === "left") div.appendChild(spacer());
+      values.forEach(value => div.appendChild(key(value)));
+      if (side === "right") div.appendChild(spacer());
+      return div;
+    }
+
+    function half(rows, thumbs, side, shape) {
+      const div = document.createElement("div");
+      div.className = `half ${side}`;
+      rows.forEach(values => div.appendChild(row(values)));
+      div.appendChild(thumbRow(thumbs, side, shape));
+      return div;
+    }
+
+    function render() {
+      const keyboard = layouts[currentKeyboard];
+      const layer = keyboard.layers[currentLayer];
+      keyboardEl.className = `keyboard ${keyboard.shape}`;
+      keyboardEl.replaceChildren(
+        half(layer.left, layer.leftThumbs, "left", keyboard.shape),
+        spacer(),
+        half(layer.right, layer.rightThumbs, "right", keyboard.shape)
+      );
+      notesEl.textContent = keyboard.notes;
+      [...layerTabs.children].forEach(button => {
+        button.setAttribute("aria-selected", button.dataset.layer === currentLayer ? "true" : "false");
+      });
+    }
+
+    function init() {
+      Object.entries(layouts).forEach(([id, keyboard]) => {
+        const option = document.createElement("option");
+        option.value = id;
+        option.textContent = keyboard.name;
+        keyboardSelect.appendChild(option);
+      });
+
+      layers.forEach(layer => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.layer = layer;
+        button.setAttribute("role", "tab");
+        button.textContent = layer;
+        button.addEventListener("click", () => {
+          currentLayer = layer;
+          render();
+        });
+        layerTabs.appendChild(button);
+      });
+
+      keyboardSelect.addEventListener("change", event => {
+        currentKeyboard = event.target.value;
+        render();
+      });
+
+      render();
+    }
+
+    init();
+  </script>
+</body>
+</html>
