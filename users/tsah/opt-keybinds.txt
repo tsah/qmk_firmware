@@ -1,0 +1,17 @@
+# Mac global keybinds on Option alone (Hammerspoon, ~/dotfiles/hammerspoon/init.lua).
+# Same-hand Opt allow-list for the firmware. QWERTY key names.
+H  snap left half
+J  snap centered
+K  maximize
+L  snap right half
+X  dismiss top notification
+O  open top notification
+1  Rex
+2  Chrome
+3  Slack
+4  WhatsApp
+5  Grok Bot
+P  new Chrome window, personal profile
+W  new Chrome window, work profile
+U  screenshot selection and share
+# No Shift variants. Opt+arrows/Backspace and Opt+B/F/D/. stay unbound.

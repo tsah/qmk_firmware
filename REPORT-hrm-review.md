@@ -119,6 +119,23 @@ Cause 2 (releasing the mod early) is not addressed yet, on purpose. The fix is `
 (an opposite-hand *press* triggers the mod immediately), but it brings back stray mods on cross-hand rolls
 whenever Flow Tap isn't active. It is step 2 of the tuning plan, to try only if missed mods continue.
 
+### Later changes from the recorder and the Opt keybinds (2026-11-23)
+
+- **Shift is exempt from Flow Tap entirely** (commit `23e2a17593`). On the first day the recorder caught
+  Flow Tap eating intended Shifts: "mac?" came out as "maca/". Shift was pressed 97 ms after a letter, with
+  "/" nested inside a 212 ms hold. Another Shift held 560 ms was also typed as a letter. Flow Tap decides at
+  press time, so no amount of holding rescues it. tsah uses Shift straight after letters all the time
+  (punctuation, camelCase).
+- **Opt same-hand allow-list** (commit `253a2b982a`). The Mac global keybinds moved from Ctrl+Opt to
+  Option alone (Hammerspoon, set up by the mac-manager session; the list is in `users/tsah/opt-keybinds.txt`):
+  H J K L, X O, 1–5, P W U. A nested press of one of these inside the Opt home row key counts as Opt even
+  on the same hand, the same way as the Cmd list.
+- **Recorder** (`users/tsah/hrm_log/`, see its README). The 3w6 Pro runs the `TSAH_HRM_LOG=yes` build until
+  the analysis on 2026-11-25. The logs are then deleted and a normal build is flashed.
+- **Corne:** it gets all of the above through `users/tsah`, and both its home row keycodes and its
+  handedness layout match the 3w6. Flash it from home with `keyboards/crkbd/keymaps/tsah/flash.sh`
+  (normal build, no recorder). Boot key: Q (left) or P (right), the top-row key second from the outside.
+
 ### Verified behaviour (`make test:tsah_hrm`)
 
 | Scenario | Result |
