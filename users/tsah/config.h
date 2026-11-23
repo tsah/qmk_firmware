@@ -4,31 +4,29 @@
 // chordal_hold_layout) stay in each keymap.
 #pragma once
 
-// Home row mods, "timeless" style (after urob's ZMK config), mapped to QMK:
+// Home row mods. Tuned against the misfire tsah actually gets: an intended
+// mod coming out as a letter (not stray mods while typing). So instead of
+// urob's full "timeless" recipe (long term + 150 ms prior-idle, which trade
+// mod reliability for typing safety) this keeps the term short and uses only
+// the parts that help:
 //
-//   ZMK (urob)                          QMK equivalent here
-//   flavor = "balanced"              -> PERMISSIVE_HOLD
-//   positional hold-tap (opposite    -> CHORDAL_HOLD + chordal_hold_layout in
-//     hand + thumbs trigger holds)      each keymap (thumbs are '*')
-//   hold-trigger-on-release          -> Chordal Hold's same-hand multi-mod
-//                                       exception (Ctrl+Shift+... works)
-//   require-prior-idle-ms = 150      -> FLOW_TAP_TERM 150 (see tsah.c)
-//   tapping-term-ms = 280            -> TAPPING_TERM 280
-//   quick-tap-ms = 175               -> QUICK_TAP_TERM 175
+//   PERMISSIVE_HOLD   opposite-hand key pressed AND released inside the mod
+//                     hold -> mod (ZMK "balanced")
+//   CHORDAL_HOLD      same-hand chords type letters, except the Cmd shortcut
+//                     allow-list in tsah.c (get_chordal_hold)
+//   FLOW_TAP_TERM     only keys pressed < 100 ms after a letter are forced to
+//                     be letters: fast typing stays safe, deliberate
+//                     shortcuts (normally after a short pause) are untouched
 //
 // Every tap-hold key in these keymaps is a home row mod (thumbs are plain
 // MO()), so global terms are fine. See REPORT-hrm-review.md for tuning.
 #define CHORDAL_HOLD
 #define PERMISSIVE_HOLD
 
-// Long tapping term: with Permissive + Chordal Hold, intentional mods are
-// decided by key order (nested opposite-hand press), not by time, so the term
-// mainly guards against slow/lingering taps being read as holds.
-#define TAPPING_TERM 280
+#define TAPPING_TERM 200
 #define QUICK_TAP_TERM 175
 
-// A home row mod pressed within 150 ms of the previous alpha key is a tap.
-#define FLOW_TAP_TERM 150
+#define FLOW_TAP_TERM 100
 
 // Mouse key settings — comfortable speed/accuracy trade-off
 // assuming a screen refresh rate of 60 Hz or higher
