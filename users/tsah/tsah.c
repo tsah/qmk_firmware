@@ -29,9 +29,11 @@ static bool is_cmd_shortcut_letter(uint16_t keycode) {
     return false;
 }
 
-// macOS global Opt (Option) keybinds set up in Hammerspoon: window snapping
-// (H J K L), notifications (X O), app switching (1-5), Chrome windows (P W),
-// screenshot share (U). Same idea as the Cmd list.
+// macOS global Opt (Option) keybinds set up in Hammerspoon (list in
+// users/tsah/opt-keybinds.txt): window focus (Opt+H J K L) and snapping
+// (Cmd+Opt+H J K L), notifications (X O), app switching (1-5), Chrome windows
+// (P W), screenshot share (U). Opt+Space needs no entry: thumbs count as
+// either hand. Same idea as the Cmd list.
 static bool is_opt_keybind_key(uint16_t keycode) {
     switch (get_tap_keycode(keycode)) {
         case KC_H:

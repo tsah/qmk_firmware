@@ -408,3 +408,102 @@ TEST_F(TsahHrm, same_hand_opt_non_keybind_is_tap) {
     run_one_scan_loop();
     VERIFY_AND_CLEAR(driver);
 }
+
+// Opt + Space (thumb, either hand) -> Opt+Space.
+TEST_F(TsahHrm, opt_space_is_hold) {
+    TestDriver driver;
+    InSequence s;
+    auto alt_d = KeymapKey(0, 2, 1, LALT_T(KC_D));
+    auto spc   = KeymapKey(0, 2, 3, KC_SPC);
+    set_keymap({alt_d, spc});
+
+    idle_for(500);
+    EXPECT_NO_REPORT(driver);
+    alt_d.press();
+    idle_for(40);
+    spc.press();
+    idle_for(20);
+    VERIFY_AND_CLEAR(driver);
+
+    EXPECT_REPORT(driver, (KC_LALT));
+    EXPECT_REPORT(driver, (KC_LALT, KC_SPC));
+    EXPECT_REPORT(driver, (KC_LALT));
+    EXPECT_EMPTY_REPORT(driver);
+    spc.release();
+    run_one_scan_loop();
+    alt_d.release();
+    run_one_scan_loop();
+    VERIFY_AND_CLEAR(driver);
+}
+
+// All right hand: Cmd/J + Opt/K + L nested -> Cmd+Opt+L (window snapping).
+TEST_F(TsahHrm, same_hand_cmd_opt_l_chord) {
+    TestDriver driver;
+    InSequence s;
+    auto gui_j = KeymapKey(0, 6, 1, RGUI_T(KC_J));
+    auto alt_k = KeymapKey(0, 7, 1, RALT_T(KC_K));
+    auto l     = KeymapKey(0, 8, 1, KC_L);
+    set_keymap({gui_j, alt_k, l});
+
+    idle_for(500);
+    EXPECT_NO_REPORT(driver);
+    gui_j.press();
+    idle_for(20);
+    alt_k.press();
+    idle_for(20);
+    l.press();
+    idle_for(20);
+    VERIFY_AND_CLEAR(driver);
+
+    EXPECT_REPORT(driver, (KC_RGUI));
+    EXPECT_REPORT(driver, (KC_RGUI, KC_RALT));
+    EXPECT_REPORT(driver, (KC_RGUI, KC_RALT, KC_L));
+    EXPECT_REPORT(driver, (KC_RGUI, KC_RALT));
+    l.release();
+    run_one_scan_loop();
+    VERIFY_AND_CLEAR(driver);
+
+    EXPECT_REPORT(driver, (KC_RALT));
+    EXPECT_EMPTY_REPORT(driver);
+    gui_j.release();
+    run_one_scan_loop();
+    alt_k.release();
+    run_one_scan_loop();
+    VERIFY_AND_CLEAR(driver);
+}
+
+// Left Cmd/F + left Opt/D + right-hand L -> Cmd+Opt+L (opposite hand).
+TEST_F(TsahHrm, left_cmd_opt_right_l_chord) {
+    TestDriver driver;
+    InSequence s;
+    auto gui_f = KeymapKey(0, 3, 1, LGUI_T(KC_F));
+    auto alt_d = KeymapKey(0, 2, 1, LALT_T(KC_D));
+    auto l     = KeymapKey(0, 8, 1, KC_L);
+    set_keymap({gui_f, alt_d, l});
+
+    idle_for(500);
+    EXPECT_NO_REPORT(driver);
+    gui_f.press();
+    idle_for(20);
+    alt_d.press();
+    idle_for(20);
+    l.press();
+    idle_for(20);
+    VERIFY_AND_CLEAR(driver);
+
+    EXPECT_REPORT(driver, (KC_LGUI));
+    EXPECT_REPORT(driver, (KC_LGUI, KC_LALT));
+    EXPECT_REPORT(driver, (KC_LGUI, KC_LALT, KC_L));
+    EXPECT_REPORT(driver, (KC_LGUI, KC_LALT));
+    l.release();
+    run_one_scan_loop();
+    VERIFY_AND_CLEAR(driver);
+
+    EXPECT_REPORT(driver, (KC_LALT));
+    EXPECT_EMPTY_REPORT(driver);
+    gui_f.release();
+    run_one_scan_loop();
+    alt_d.release();
+    run_one_scan_loop();
+    VERIFY_AND_CLEAR(driver);
+}
