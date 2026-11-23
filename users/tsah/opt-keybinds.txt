@@ -1,7 +1,8 @@
 # Mac global keybinds on Option (Hammerspoon, ~/dotfiles/hammerspoon/init.lua).
 # Source: the mac-manager session. Same-hand allow-list for the firmware
 # (users/tsah/tsah.c, is_opt_keybind_key). QWERTY key names.
-H J K L    Opt: focus window left/down/up/right; Cmd+Opt: snap
+H J K L    Opt: focus window left/down/up/right
+           Cmd+Opt: snap left half / centered / maximize / right half
 X          dismiss top notification
 O          open top notification
 1          Rex
