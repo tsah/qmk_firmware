@@ -10,13 +10,13 @@ using testing::InSequence;
 
 class TsahHrm : public TestFixture {};
 
-// Mid-word roll: N (right), then 50 ms later Shift/A (left) with another
-// right-hand key nested inside it. Flow Tap must make A a tap ("ana", not "aN").
+// Mid-word roll: N (right), then 50 ms later Ctrl/S (left) with another
+// right-hand key nested inside it. Flow Tap must make A a tap ("sns", not Ctrl+N).
 TEST_F(TsahHrm, flow_tap_mid_word_is_tap) {
     TestDriver driver;
     InSequence s;
     auto n     = KeymapKey(0, 6, 1, KC_N);
-    auto sft_a = KeymapKey(0, 0, 1, LSFT_T(KC_A));
+    auto sft_a = KeymapKey(0, 1, 1, LCTL_T(KC_S));
     set_keymap({n, sft_a});
 
     EXPECT_REPORT(driver, (KC_N));
@@ -25,17 +25,50 @@ TEST_F(TsahHrm, flow_tap_mid_word_is_tap) {
     idle_for(50);
     VERIFY_AND_CLEAR(driver);
 
-    EXPECT_REPORT(driver, (KC_A));
+    EXPECT_REPORT(driver, (KC_S));
     sft_a.press();
     run_one_scan_loop();
     VERIFY_AND_CLEAR(driver);
 
-    EXPECT_REPORT(driver, (KC_A, KC_N));
-    EXPECT_REPORT(driver, (KC_A));
+    EXPECT_REPORT(driver, (KC_S, KC_N));
+    EXPECT_REPORT(driver, (KC_S));
     tap_key(n);
     VERIFY_AND_CLEAR(driver);
 
     EXPECT_EMPTY_REPORT(driver);
+    sft_a.release();
+    run_one_scan_loop();
+    VERIFY_AND_CLEAR(driver);
+}
+
+// "mac?": Shift/A pressed 60 ms after a letter, "/" nested inside it -> "?".
+TEST_F(TsahHrm, shift_right_after_letter_still_shifts) {
+    TestDriver driver;
+    InSequence s;
+    auto c     = KeymapKey(0, 3, 2, KC_C);
+    auto slsh  = KeymapKey(0, 9, 2, KC_SLSH);
+    auto sft_a = KeymapKey(0, 0, 1, LSFT_T(KC_A));
+    set_keymap({c, slsh, sft_a});
+
+    EXPECT_REPORT(driver, (KC_C));
+    EXPECT_EMPTY_REPORT(driver);
+    tap_key(c);
+    idle_for(60);
+    VERIFY_AND_CLEAR(driver);
+
+    EXPECT_NO_REPORT(driver);
+    sft_a.press();
+    idle_for(70);
+    slsh.press();
+    run_one_scan_loop();
+    VERIFY_AND_CLEAR(driver);
+
+    EXPECT_REPORT(driver, (KC_LSFT));
+    EXPECT_REPORT(driver, (KC_LSFT, KC_SLSH));
+    EXPECT_REPORT(driver, (KC_LSFT));
+    EXPECT_EMPTY_REPORT(driver);
+    slsh.release();
+    run_one_scan_loop();
     sft_a.release();
     run_one_scan_loop();
     VERIFY_AND_CLEAR(driver);

@@ -70,10 +70,10 @@ uint16_t get_flow_tap_term(uint16_t keycode, keyrecord_t *record, uint16_t prev_
     if (!is_flow_tap_key(keycode) || !is_flow_tap_key(prev_keycode)) {
         return 0;
     }
-    // Capitalising the first letter of a word: Space then a quick Shift hold
-    // must still shift. Mid-word (previous key a letter) Flow Tap applies,
-    // which is where lingering-pinky Shift misfires happen.
-    if (is_shift_mod_tap(keycode) && get_tap_keycode(prev_keycode) == KC_SPC) {
+    // Shift is exempt from Flow Tap: it is used straight after letters for
+    // punctuation (? ! : " ) and camelCase, and the recorder showed Flow Tap
+    // eating those ("mac?" typed as "maca/").
+    if (is_shift_mod_tap(keycode)) {
         return 0;
     }
     return FLOW_TAP_TERM;
