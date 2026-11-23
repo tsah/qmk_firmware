@@ -99,10 +99,12 @@ enum layers {
                                   _______,       _______,       _______,          KC_DEL,        KC_LSFT,       _______
 
 // Layer 3: Nav/Symbols (hold right middle thumb)
+// CapsWd = Caps Word: types CAPITALS (and keeps going through _ and digits)
+// until the next space or other non-word key.
 // ┌──────┬──────┬──────┬──────┬──────┐   ┌──────┬──────┬──────┬──────┬──────┐
 // │  __  │  __  │  __  │  __  │  __  │   │ Home │ PgDn │ PgUp │ End  │  '   │
 // ├──────┼──────┼──────┼──────┼──────┤   ├──────┼──────┼──────┼──────┼──────┤
-// │  -   │  +   │  _   │  =   │  __  │   │  ←   │  ↓   │  ↑   │  →   │  "   │
+// │  -   │  +   │  _   │  =   │CapsWd│   │  ←   │  ↓   │  ↑   │  →   │  "   │
 // ├──────┼──────┼──────┼──────┼──────┤   ├──────┼──────┼──────┼──────┼──────┤
 // │  __  │  __  │ PScr │  __  │  __  │   │  __  │  __  │  __  │  __  │  __  │
 // └──────┴──────┼──────┼──────┼──────┤   ├──────┼──────┼──────┼──────┴──────┘
@@ -110,24 +112,25 @@ enum layers {
 //               └──────┴──────┴──────┘   └──────┴──────┴──────┘
 #define TSAH_NAV \
     _______,       _______,       _______,       _______,       _______,          KC_HOME,       KC_PGDN,       KC_PGUP,       KC_END,        KC_QUOT,         \
-    KC_MINS,       KC_PLUS,       KC_UNDS,       KC_EQL,        _______,          KC_LEFT,       KC_DOWN,       KC_UP,         KC_RGHT,       KC_DQT,          \
+    KC_MINS,       KC_PLUS,       KC_UNDS,       KC_EQL,        CW_TOGG,          KC_LEFT,       KC_DOWN,       KC_UP,         KC_RGHT,       KC_DQT,          \
     _______,       _______,       KC_PSCR,       _______,       _______,          _______,       _______,       _______,       _______,       _______,         \
                                   _______,       _______,       KC_BSPC,          _______,       _______,       _______
 
 // Layer 4: F-Keys + System (hold right outer thumb)
+// Boot = reboot the USB-connected half into its bootloader (for flashing).
 // ┌──────┬──────┬──────┬──────┬──────┐   ┌──────┬──────┬──────┬──────┬──────┐
 // │TO(0) │ TOG  │ MODE │  __  │  __  │   │  __  │  F1  │  F2  │  F3  │ F10  │
 // ├──────┼──────┼──────┼──────┼──────┤   ├──────┼──────┼──────┼──────┼──────┤
 // │TO(1) │ HUE+ │ SAT+ │ VAL+ │  __  │   │  __  │  F4  │  F5  │  F6  │ F11  │
 // ├──────┼──────┼──────┼──────┼──────┤   ├──────┼──────┼──────┼──────┼──────┤
-// │  __  │ HUE- │ SAT- │ VAL- │  __  │   │  __  │  F7  │  F8  │  F9  │ F12  │
+// │ Boot │ HUE- │ SAT- │ VAL- │  __  │   │  __  │  F7  │  F8  │  F9  │ F12  │
 // └──────┴──────┼──────┼──────┼──────┤   ├──────┼──────┼──────┼──────┴──────┘
 //               │  __  │  __  │  __  │   │  __  │  __  │██████│
 //               └──────┴──────┴──────┘   └──────┴──────┴──────┘
 #define TSAH_FUN \
     TO(_QWERTY),   RM_TOGG,       RM_NEXT,       _______,       _______,          _______,       KC_F1,         KC_F2,         KC_F3,         KC_F10,          \
     TO(_STURDY),   RM_HUEU,       RM_SATU,       RM_VALU,       _______,          _______,       KC_F4,         KC_F5,         KC_F6,         KC_F11,          \
-    _______,       RM_HUED,       RM_SATD,       RM_VALD,       _______,          _______,       KC_F7,         KC_F8,         KC_F9,         KC_F12,          \
+    QK_BOOT,       RM_HUED,       RM_SATD,       RM_VALD,       _______,          _______,       KC_F7,         KC_F8,         KC_F9,         KC_F12,          \
                                   _______,       _______,       _______,          _______,       _______,       _______
 
 // Layer 5: Mouse (hold left outer thumb)
