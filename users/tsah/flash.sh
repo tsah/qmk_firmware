@@ -41,7 +41,7 @@ case "$KB" in
         DONE_HINT="Connect the halves with the USB-C cable, plug USB into either half, and test."
         ;;
     crkbd/*)
-        BOOT_HINT="unplug it, hold its outer top-row key (Q on left / P on right), plug USB back in;
+        BOOT_HINT="unplug it, hold Q (left) / P (right): the top-row key SECOND from the outside, plug USB back in;
   or double-tap its reset button."
         DONE_HINT="Connect the TRRS cable, plug USB into the left half, and test."
         ;;
