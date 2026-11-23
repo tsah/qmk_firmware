@@ -3,7 +3,7 @@
 #include "quantum.h"
 
 #ifdef CHORDAL_HOLD
-// macOS Cmd shortcuts whose letter sits on the same hand as the Cmd home row
+// Same-hand allow-lists. macOS Cmd shortcuts whose letter sits on the same hand as the Cmd home row
 // key (e.g. Cmd on F + W). Chordal Hold would type "fw"; for these letters a
 // nested press (letter pressed and released while Cmd is held) is Cmd+letter
 // instead. A roll (Cmd key released first) still types both letters.
@@ -29,12 +29,35 @@ static bool is_cmd_shortcut_letter(uint16_t keycode) {
     return false;
 }
 
-static bool is_gui_mod_tap(uint16_t keycode) {
-    return IS_QK_MOD_TAP(keycode) && (QK_MOD_TAP_GET_MODS(keycode) & 0x0F) == MOD_LGUI;
+// macOS global Opt (Option) keybinds set up in Hammerspoon: window snapping
+// (H J K L), notifications (X O), app switching (1-5), Chrome windows (P W),
+// screenshot share (U). Same idea as the Cmd list.
+static bool is_opt_keybind_key(uint16_t keycode) {
+    switch (get_tap_keycode(keycode)) {
+        case KC_H:
+        case KC_J:
+        case KC_K:
+        case KC_L:
+        case KC_O:
+        case KC_P:
+        case KC_U:
+        case KC_W:
+        case KC_X:
+        case KC_1 ... KC_5:
+            return true;
+    }
+    return false;
+}
+
+static bool is_mod_tap_with(uint16_t keycode, uint8_t mod) {
+    return IS_QK_MOD_TAP(keycode) && (QK_MOD_TAP_GET_MODS(keycode) & 0x0F) == mod;
 }
 
 bool get_chordal_hold(uint16_t tap_hold_keycode, keyrecord_t *tap_hold_record, uint16_t other_keycode, keyrecord_t *other_record) {
-    if (is_gui_mod_tap(tap_hold_keycode) && is_cmd_shortcut_letter(other_keycode)) {
+    if (is_mod_tap_with(tap_hold_keycode, MOD_LGUI) && is_cmd_shortcut_letter(other_keycode)) {
+        return true;
+    }
+    if (is_mod_tap_with(tap_hold_keycode, MOD_LALT) && is_opt_keybind_key(other_keycode)) {
         return true;
     }
     return get_chordal_hold_default(tap_hold_record, other_record);

@@ -360,3 +360,51 @@ TEST_F(TsahHrm, same_hand_multi_mod_chord) {
     run_one_scan_loop();
     VERIFY_AND_CLEAR(driver);
 }
+
+// Opt keybind allow-list: right Opt/K with L nested (same hand) -> Opt+L.
+TEST_F(TsahHrm, same_hand_opt_keybind_nested_is_hold) {
+    TestDriver driver;
+    InSequence s;
+    auto alt_k = KeymapKey(0, 7, 1, RALT_T(KC_K));
+    auto l     = KeymapKey(0, 8, 1, KC_L);
+    set_keymap({alt_k, l});
+
+    idle_for(500);
+    EXPECT_NO_REPORT(driver);
+    alt_k.press();
+    idle_for(40);
+    l.press();
+    idle_for(20);
+    VERIFY_AND_CLEAR(driver);
+
+    EXPECT_REPORT(driver, (KC_RALT));
+    EXPECT_REPORT(driver, (KC_RALT, KC_L));
+    EXPECT_REPORT(driver, (KC_RALT));
+    EXPECT_EMPTY_REPORT(driver);
+    l.release();
+    run_one_scan_loop();
+    alt_k.release();
+    run_one_scan_loop();
+    VERIFY_AND_CLEAR(driver);
+}
+
+// Not on the Opt list (I): same-hand nested stays letters.
+TEST_F(TsahHrm, same_hand_opt_non_keybind_is_tap) {
+    TestDriver driver;
+    InSequence s;
+    auto alt_k = KeymapKey(0, 7, 1, RALT_T(KC_K));
+    auto i     = KeymapKey(0, 7, 0, KC_I);
+    set_keymap({alt_k, i});
+
+    idle_for(500);
+    EXPECT_REPORT(driver, (KC_K));
+    EXPECT_REPORT(driver, (KC_K, KC_I));
+    EXPECT_REPORT(driver, (KC_K));
+    EXPECT_EMPTY_REPORT(driver);
+    alt_k.press();
+    idle_for(40);
+    tap_key(i);
+    alt_k.release();
+    run_one_scan_loop();
+    VERIFY_AND_CLEAR(driver);
+}
