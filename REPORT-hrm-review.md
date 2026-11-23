@@ -193,6 +193,21 @@ To see what is actually happening, add `CONSOLE_ENABLE = yes` to `users/tsah/rul
 
 ## 3. Keymap review (prioritised)
 
+**Decisions (2026-11-23, with tsah):**
+
+| Item | Decision |
+|---|---|
+| Plain mods on NAV | **Dropped.** tsah's habit is "Shift, then arrow" (home row mod first, then NAV). That now works reliably: Shift is out of Flow Tap, and the thumbs count as either hand. |
+| Persistent base layer (`PDF`) | **Dropped.** Sturdy is abandoned for now; the layer stays for a later retry. |
+| Shifted symbols via two thumbs | **Kept as is.** Two thumbs, then the number pad, is a comfortable chord. |
+| `QK_BOOT` | **Done:** FUN + Z position (commit "add Caps Word on NAV and a bootloader key on FUN"). |
+| Shared layers | **Done:** `users/tsah/tsah.h`. Each keymap has a `LAYOUT_tsah()` wrapper. The compiled 3w6 keymap is byte-identical; the Corne differs only in its former drift. |
+| Caps Word | **Done:** NAV + G position. |
+| Esc/Tab placement | **Kept** on NUM's home row. |
+| Opt-only Mac keybinds (instead of Ctrl+Opt "hyper") | **Done:** same-hand Opt allow-list (H J K L O P U W X, 1–5). |
+
+The original recommendations follow for reference.
+
 The current design is clean: a dedicated thumb key per layer, no tri-layer, and both boards nearly
 identical. Most of the items below are about the few places where HRMs and layers interact, and about
 reducing duplication.
