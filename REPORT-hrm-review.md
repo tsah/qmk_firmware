@@ -7,10 +7,16 @@ Branch `hrm-timeless-review`, based on `ea02f45a90`. Nothing has been pushed.
 - **No upstream rebase is needed.** This tree (upstream merged up to `b1aea25560`, 2026-09-26) already has
   Chordal Hold, Flow Tap (`FLOW_TAP_TERM`, `is_flow_tap_key()`, `get_flow_tap_term()`), Speculative Hold
   and all the per-key callbacks (`quantum/action_tapping.{c,h}`, `docs/tap_hold.md`).
-- **Timeless HRMs are now on for both boards**, from one shared place: `users/tsah/`. QMK includes it
-  automatically for any keymap named `tsah`. The settings are tapping term 280, Flow Tap 150, Permissive
-  Hold and Chordal Hold, plus a Shift exemption after Space.
-- **The behaviour is unit-tested** against QMK's tap-hold test harness (`make test:tsah_hrm`, 7 scenarios,
+- **The misfire to fix is a *missed* mod** (an intended mod comes out as a letter), not stray mods while
+  typing. urob's full timeless recipe targets the opposite problem, so it was tried and then retuned (see
+  §1). Final settings, shared by both boards from `users/tsah/`, which QMK includes automatically for any
+  keymap named `tsah`:
+  - tapping term **200** (unchanged)
+  - Flow Tap **100 ms** (new)
+  - Permissive Hold + Chordal Hold (kept)
+  - **a same-hand Cmd shortcut allow-list** (new)
+  - a Shift exemption after Space (new)
+- **The behaviour is unit-tested** against QMK's tap-hold test harness (`make test:tsah_hrm`, 11 scenarios,
   all pass).
 - **`flash.sh` works on macOS and Linux.** It is one shared script; the per-keymap `flash.sh` files are
   now thin wrappers.
@@ -24,6 +30,8 @@ Branch `hrm-timeless-review`, based on `ea02f45a90`. Nothing has been pushed.
 | `3ee9d288c1` | Timeless HRMs: `TAPPING_TERM 280`, `FLOW_TAP_TERM 150`, Flow Tap callbacks in `users/tsah/tsah.c`. |
 | `54689e4b89` | `tests/tsah_hrm/`: unit tests that build the real `users/tsah` config and code. |
 | `a7e752cc7f` | Portable `users/tsah/flash.sh`; the keymap `flash.sh` files become wrappers. |
+| `5fd5b58fac` | **Retune for missed mods**: term back to 200, Flow Tap 100, Cmd same-hand allow-list (`get_chordal_hold`). |
+| `b83dc0b0aa` | Tests for the allow-list and the 100 ms Flow Tap. |
 
 Both `keebart/3w6_pro:tsah` and `crkbd/rev4_1/standard:tsah` were compiled after every commit and build
 cleanly.
@@ -48,7 +56,9 @@ urob's goal is HRMs that almost never misfire and that don't depend on precise t
    matters when a key is held *alone*. A long term means a slow or lingering tap still types its letter.
    Also `quick-tap-ms = 175`, so a tap followed by a hold auto-repeats.
 
-### How that maps onto this QMK tree
+### How that maps onto this QMK tree (first attempt, commit `3ee9d288c1`)
+
+> Superseded for the term values: see **Retune** below. The final values are term 200 and Flow Tap 100.
 
 | ZMK (urob) | QMK here | Status |
 |---|---|---|
@@ -68,7 +78,7 @@ balanced flavor. Keep it.
 **Why the tapping term goes up, not down.** The intuition is "shorter term = snappier mods". With
 Permissive + Chordal Hold, intentional opposite-hand shortcuts already fire on the nested release, well
 inside the term. A shorter term only makes lingering taps (pinkies especially) turn into holds, which is
-exactly the misfire being fixed. The costs of 280 are listed under "Trade-offs" below.
+the stray-mod misfire. That turned out *not* to be the misfire tsah gets, hence the retune.
 
 **Flow Tap details (`users/tsah/tsah.c`):**
 
@@ -76,53 +86,87 @@ exactly the misfire being fixed. The costs of 280 are listed under "Trade-offs" 
   letter-area key on Sturdy. As in the default, Flow Tap switches off while Ctrl, Gui or left Alt are held,
   so a second mod can be added to a hotkey quickly.
 - `get_flow_tap_term()` makes one exception: **the Shift HRMs are exempt when the previous key was
-  Space.** Without it, a quick capital at the start of a word (`space`, then hold Shift+letter within
-  150 ms) would type a lowercase letter. That is the most common complaint about prior-idle setups. Inside
+  Space.** Without it, a quick capital at the start of a word (`space`, then hold Shift+letter within the
+  Flow Tap term) would type a lowercase letter. That is the most common complaint about prior-idle setups. Inside
   words, where the lingering-pinky Shift misfires happen, Flow Tap still applies. After Space, behaviour is
   the same as before this change, so nothing regresses.
 - A small difference from ZMK: QMK's Flow Tap also counts key *releases* as activity, so it is a bit
   stricter (it suppresses slightly more holds) than ZMK's prior-idle.
 
+### Retune: the reported misfire is the opposite one
+
+After the timeless commit, tsah clarified that the misfires are **intended mods coming out as letters**.
+They're on macOS, and unsure whether the failing shortcuts are same-hand or opposite-hand. With
+Permissive + Chordal Hold, an intended mod becomes a letter in three ways:
+
+1. **The mod and the letter are on the same hand** (Cmd on F + W). Chordal Hold settles as tap the
+   moment W is *pressed*, unless F has been held for the full term. On a Mac most shortcut letters are
+   on the left hand, so this is the most likely cause.
+2. **The mod is released a hair before the letter** (Cmd on J, then C, J let go first). Permissive Hold
+   needs the letter pressed *and released* inside the mod, so this reads as the roll "jc".
+3. **A shortcut fired immediately after typing**, which Flow Tap turns into a letter.
+
+The timeless commit made 1 slower (280 ms) and created 3 (150 ms), so it was retuned:
+
+| Setting | Timeless commit | Now | Why |
+|---|---|---|---|
+| `TAPPING_TERM` | 280 | **200** | A long term only helps against stray mods. It makes same-hand shortcuts wait longer. |
+| `FLOW_TAP_TERM` | 150 | **100** | Still forces letters during genuinely fast typing. A deliberate shortcut (normally after a short pause) almost never lands within 100 ms. |
+| Same-hand Cmd chords | always a letter | **Cmd+letter if nested** | `get_chordal_hold()` allows Cmd (either Gui mod-tap) + A C F L N O P Q R S T V W X Z when the letter is pressed and released inside the Cmd hold. A roll (Cmd released first) still types both letters. Other same-hand letters (e.g. F+E in "few") keep the opposite-hand rule. The list is keycode-based, so it works on both QWERTY and Sturdy. |
+| Permissive + Chordal Hold | on | on | Unchanged. |
+
+Cause 2 (releasing the mod early) is not addressed yet, on purpose. The fix is `HOLD_ON_OTHER_KEY_PRESS`
+(an opposite-hand *press* triggers the mod immediately), but it brings back stray mods on cross-hand rolls
+whenever Flow Tap isn't active. It is step 2 of the tuning plan, to try only if missed mods continue.
+
 ### Verified behaviour (`make test:tsah_hrm`)
 
 | Scenario | Result |
 |---|---|
-| `n`, then 50 ms later Shift/A with a right-hand key nested inside it | tap: `a`, `n` (was Shift+N) |
+| `n`, then 50 ms later Shift/A with a right-hand key nested inside it | tap: `a`, `n` (Flow Tap) |
 | Space, then 50 ms later Shift/A + nested right-hand key | **Shift+N** (capitals still work) |
 | Space, then 50 ms later Gui/F + nested key | tap (the exemption is Shift-only) |
-| Idle, then Gui/F + nested right-hand key at 40 ms | Gui+N (Permissive Hold) |
-| Shift/A held alone for 250 ms, released | types `a` (was a dead Shift at 200 ms) |
+| Idle, then Gui/F + nested right-hand key at 40 ms | Cmd+N (Permissive Hold) |
+| `e`, then 120 ms later Gui/F + nested N | **Cmd+N** (outside the 100 ms Flow Tap) |
+| Gui/F + W nested (same hand) | **Cmd+W** (allow-list) |
+| Gui/F + Ctrl/S nested (same hand, S is itself a home row mod) | **Cmd+S** |
+| Gui/F down, W down, F up, W up (roll) | `fw` |
+| Gui/F + E nested (same hand, not a shortcut letter) | `fe` |
 | Shift/A with a same-hand key nested | tap (Chordal Hold) |
 | Shift/A + Ctrl/S + right-hand N | Ctrl+Shift+N (same-hand multi-mod) |
 
 ### Trade-offs to be aware of
 
-- **Same-hand shortcuts are slower.** Chordal Hold makes Gui/F + `W` (same hand) a tap unless F has been
-  held for the whole tapping term, now 280 ms instead of 200 ms. Habit fix: use the opposite hand's mod
-  (right-hand Cmd/J + W/Q/T/C/V on the left). This is how timeless HRMs are meant to be used.
-- **Mod + real-mouse click is laggier.** With no other key pressed, the mod only registers after 280 ms. If
-  Shift/Cmd+click feels late, enable `SPECULATIVE_HOLD` (see the tuning plan).
-- **Same-hand capitals** (for example Shift on `;` + `I`) need the opposite-hand Shift, or a full-term
-  hold. This was already true with Chordal Hold.
+- **The allow-list re-opens a small stray-mod risk:** a slow word start like "fr…"/"fa…" where F stays down
+  through the whole R/A press becomes Cmd+R/Cmd+A. Flow Tap covers it during normal-speed typing. If it
+  happens, remove that letter from `is_cmd_shortcut_letter()` in `users/tsah/tsah.c`.
+- **Same-hand shortcuts with Ctrl/Alt/Shift** (not Cmd) still need the full 200 ms hold, or the opposite
+  hand's mod.
+- **Mod + real-mouse click** waits up to 200 ms (as before). `SPECULATIVE_HOLD` would remove that.
 
 ## 2. Tuning plan
 
 Change one thing at a time, in `users/tsah/config.h` / `tsah.c` (both boards follow), and give each change
-a day or two. Re-run `make test:tsah_hrm` after editing. Most tests are written relative to the 150/280
-values, so a failing test shows you which behaviour moved.
+a day or two. Re-run `make test:tsah_hrm` after editing. A failing test shows you which behaviour moved.
 
-| Symptom | Adjust | Direction |
-|---|---|---|
-| Unwanted mods **while typing fast** (rolls) | `FLOW_TAP_TERM` | **up**, 150 → 175 → 200 |
-| Unwanted mods when typing **slowly** / a key lingers | `TAPPING_TERM` | **up**, 280 → 300 |
-| Intended mod comes out as a letter **right after typing** (e.g. Cmd+S just after a word) | `FLOW_TAP_TERM` | **down**, 150 → 125 → 100; or pause briefly before shortcuts |
-| Same-hand shortcuts (Cmd+W with Cmd on F) feel sluggish | `TAPPING_TERM` | **down** to 250 (QMK's recommended start); better, use the opposite hand |
-| Capital letters lost at the start of words | Check the Space exemption; consider also exempting `KC_ENT` / `KC_TAB` as previous keys in `get_flow_tap_term()` | — |
-| Lowercase-instead-of-capital *mid-sentence* after punctuation (e.g. `."`) | Add those keycodes as previous keys to the Shift exemption | — |
-| Shift misfires persist on the pinkies specifically | Per-key: give the Shift mod-taps a higher Flow Tap term (`get_flow_tap_term`, e.g. +25 ms), or enable `TAPPING_TERM_PER_KEY` and give the pinkies +30 ms | up, pinkies only |
-| Gui (index) misfires: index fingers roll the most | Per-key Flow Tap term +25 ms on `LGUI_T`/`RGUI_T` | up, index only |
-| Shift/Cmd + mouse click lags | `#define SPECULATIVE_HOLD` (Shift/Ctrl by default; extend in `get_speculative_hold()`). Add `SPECULATIVE_HOLD_ONE_KEY` if apps react to lone Shift taps (e.g. IntelliJ double-Shift) | — |
-| Quick tap-then-hold gives auto-repeat when you wanted a mod | `QUICK_TAP_TERM` | **down**, 175 → 120 |
+**If intended mods still come out as letters (the current problem):**
+
+| Situation | Change |
+|---|---|
+| A same-hand Cmd shortcut whose letter isn't on the list | Add the letter to `is_cmd_shortcut_letter()` |
+| Same-hand shortcuts with Ctrl/Alt/Shift | Extend `get_chordal_hold()` the same way for those mods; or lower `TAPPING_TERM` to 175 |
+| Opposite-hand shortcuts fail, especially fast ones (cause 2: the mod is released first) | **Step 2:** `#define HOLD_ON_OTHER_KEY_PRESS`. With Chordal Hold it applies to opposite-hand presses only. Possibly only for Cmd: `HOLD_ON_OTHER_KEY_PRESS_PER_KEY` + `get_hold_on_other_key_press()` returning true for Gui mod-taps |
+| Shortcuts right after typing turn into letters | `FLOW_TAP_TERM` **down**, 100 → 75, or remove it |
+
+**If stray mods appear while typing (the opposite problem, e.g. after step 2):**
+
+| Situation | Change |
+|---|---|
+| During fast typing (rolls) | `FLOW_TAP_TERM` **up**, 100 → 125 → 150 |
+| When typing slowly, or a key lingers | `TAPPING_TERM` **up**, 200 → 250 |
+| One specific same-hand Cmd+letter fires while typing a word | Remove that letter from the allow-list |
+| Mostly on the pinky Shift keys | Per-key: a higher Flow Tap term for Shift in `get_flow_tap_term()` |
+| Shift/Cmd + mouse click lags | `#define SPECULATIVE_HOLD` (+ `SPECULATIVE_HOLD_ONE_KEY` if an app reacts to lone Shift taps) |
 
 To see what is actually happening, add `CONSOLE_ENABLE = yes` to `users/tsah/rules.mk`, call
 `debug_enable = true` in `keyboard_post_init_user`, and run `qmk console`. Flow Tap logs
