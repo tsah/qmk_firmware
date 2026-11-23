@@ -136,23 +136,137 @@ TEST_F(TsahHrm, idle_then_opposite_hand_nested_is_hold) {
     VERIFY_AND_CLEAR(driver);
 }
 
-// A slow, lingering tap of 250 ms (would have been a hold at the old 200 ms
-// term) now types the letter.
-TEST_F(TsahHrm, lingering_250ms_tap_types_letter) {
+// A shortcut 120 ms after the last letter (outside the 100 ms Flow Tap term)
+// is still a mod: typing a word then Cmd+N.
+TEST_F(TsahHrm, shortcut_120ms_after_letter_is_hold) {
     TestDriver driver;
     InSequence s;
-    auto sft_a = KeymapKey(0, 0, 1, LSFT_T(KC_A));
-    set_keymap({sft_a});
+    auto e     = KeymapKey(0, 2, 0, KC_E);
+    auto n     = KeymapKey(0, 6, 1, KC_N);
+    auto gui_f = KeymapKey(0, 3, 1, LGUI_T(KC_F));
+    set_keymap({e, n, gui_f});
+
+    EXPECT_REPORT(driver, (KC_E));
+    EXPECT_EMPTY_REPORT(driver);
+    tap_key(e);
+    idle_for(120);
+    VERIFY_AND_CLEAR(driver);
+
+    EXPECT_NO_REPORT(driver);
+    gui_f.press();
+    idle_for(30);
+    n.press();
+    idle_for(20);
+    VERIFY_AND_CLEAR(driver);
+
+    EXPECT_REPORT(driver, (KC_LGUI));
+    EXPECT_REPORT(driver, (KC_LGUI, KC_N));
+    EXPECT_REPORT(driver, (KC_LGUI));
+    EXPECT_EMPTY_REPORT(driver);
+    n.release();
+    run_one_scan_loop();
+    gui_f.release();
+    run_one_scan_loop();
+    VERIFY_AND_CLEAR(driver);
+}
+
+// Same-hand Cmd shortcut on the allow-list: Cmd/F with W nested -> Cmd+W.
+TEST_F(TsahHrm, same_hand_cmd_shortcut_nested_is_hold) {
+    TestDriver driver;
+    InSequence s;
+    auto gui_f = KeymapKey(0, 3, 1, LGUI_T(KC_F));
+    auto w     = KeymapKey(0, 1, 0, KC_W);
+    set_keymap({gui_f, w});
 
     idle_for(500);
     EXPECT_NO_REPORT(driver);
-    sft_a.press();
-    idle_for(250);
+    gui_f.press();
+    idle_for(40);
+    w.press();
+    idle_for(20);
     VERIFY_AND_CLEAR(driver);
 
-    EXPECT_REPORT(driver, (KC_A));
+    EXPECT_REPORT(driver, (KC_LGUI));
+    EXPECT_REPORT(driver, (KC_LGUI, KC_W));
+    EXPECT_REPORT(driver, (KC_LGUI));
     EXPECT_EMPTY_REPORT(driver);
-    sft_a.release();
+    w.release();
+    run_one_scan_loop();
+    gui_f.release();
+    run_one_scan_loop();
+    VERIFY_AND_CLEAR(driver);
+}
+
+// Same, where the letter is itself a home row mod: Cmd/F + Ctrl/S nested -> Cmd+S.
+TEST_F(TsahHrm, same_hand_cmd_s_on_home_row_mod) {
+    TestDriver driver;
+    InSequence s;
+    auto gui_f = KeymapKey(0, 3, 1, LGUI_T(KC_F));
+    auto ctl_s = KeymapKey(0, 1, 1, LCTL_T(KC_S));
+    set_keymap({gui_f, ctl_s});
+
+    idle_for(500);
+    EXPECT_NO_REPORT(driver);
+    gui_f.press();
+    idle_for(40);
+    ctl_s.press();
+    idle_for(20);
+    VERIFY_AND_CLEAR(driver);
+
+    EXPECT_REPORT(driver, (KC_LGUI));
+    EXPECT_REPORT(driver, (KC_LGUI, KC_S));
+    EXPECT_REPORT(driver, (KC_LGUI));
+    EXPECT_EMPTY_REPORT(driver);
+    ctl_s.release();
+    run_one_scan_loop();
+    gui_f.release();
+    run_one_scan_loop();
+    VERIFY_AND_CLEAR(driver);
+}
+
+// A same-hand roll through an allow-listed letter still types letters:
+// F down, W down, F up, W up -> "fw".
+TEST_F(TsahHrm, same_hand_cmd_shortcut_roll_is_tap) {
+    TestDriver driver;
+    InSequence s;
+    auto gui_f = KeymapKey(0, 3, 1, LGUI_T(KC_F));
+    auto w     = KeymapKey(0, 1, 0, KC_W);
+    set_keymap({gui_f, w});
+
+    idle_for(500);
+    EXPECT_REPORT(driver, (KC_F));
+    EXPECT_REPORT(driver, (KC_F, KC_W));
+    EXPECT_REPORT(driver, (KC_W));
+    EXPECT_EMPTY_REPORT(driver);
+    gui_f.press();
+    idle_for(40);
+    w.press();
+    idle_for(20);
+    gui_f.release();
+    idle_for(20);
+    w.release();
+    run_one_scan_loop();
+    VERIFY_AND_CLEAR(driver);
+}
+
+// Letters not on the allow-list keep the opposite-hand rule: Gui/F with E
+// nested types "fe" (e.g. "few").
+TEST_F(TsahHrm, same_hand_non_shortcut_nested_is_tap) {
+    TestDriver driver;
+    InSequence s;
+    auto gui_f = KeymapKey(0, 3, 1, LGUI_T(KC_F));
+    auto e     = KeymapKey(0, 2, 0, KC_E);
+    set_keymap({gui_f, e});
+
+    idle_for(500);
+    EXPECT_REPORT(driver, (KC_F));
+    EXPECT_REPORT(driver, (KC_F, KC_E));
+    EXPECT_REPORT(driver, (KC_F));
+    EXPECT_EMPTY_REPORT(driver);
+    gui_f.press();
+    idle_for(40);
+    tap_key(e);
+    gui_f.release();
     run_one_scan_loop();
     VERIFY_AND_CLEAR(driver);
 }
