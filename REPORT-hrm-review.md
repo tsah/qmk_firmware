@@ -340,3 +340,5 @@ its board.
 ## 5. Flash log
 
 (The 3w6 Pro flash with the new firmware is recorded below once done.)
+
+- 2026-11-26: Corne (`crkbd/rev4_1/standard`), normal build from `a3134d6eac`, left then right half.
