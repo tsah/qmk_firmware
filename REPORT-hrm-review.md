@@ -1,6 +1,6 @@
 # Home row mods + keymap review: tsah keymaps (3w6 Pro, Corne)
 
-Branch `hrm-timeless-review`, based on `ea02f45a90`. Nothing has been pushed.
+Branch `hrm-timeless-review`, based on `ea02f45a90`, pushed to the fork (not merged to master).
 
 ## TL;DR
 
@@ -131,10 +131,42 @@ whenever Flow Tap isn't active. It is step 2 of the tuning plan, to try only if 
   H J K L, X O, 1–5, P W U. A nested press of one of these inside the Opt home row key counts as Opt even
   on the same hand, the same way as the Cmd list.
 - **Recorder** (`users/tsah/hrm_log/`, see its README). The 3w6 Pro runs the `TSAH_HRM_LOG=yes` build until
-  the analysis on 2026-11-25. The logs are then deleted and a normal build is flashed.
+  the analysis (results below). The logs have been deleted and the recorder uninstalled.
 - **Corne:** it gets all of the above through `users/tsah`, and both its home row keycodes and its
   handedness layout match the 3w6. Flash it from home with `keyboards/crkbd/keymaps/tsah/flash.sh`
   (normal build, no recorder). Boot key: Q (left) or P (right), the top-row key second from the outside.
+
+### Recorder results (2026-11-23 to 11-24): no further change
+
+The 3w6 Pro recorded about 46,000 key events over 1.5 working days (6 sessions). The logs were deleted
+afterwards. Only the aggregate numbers below were kept. The counts after the Shift exemption (sessions 4–5,
+about 44,000 events, roughly 4,700 home row key presses) are what matter:
+
+- **Missed mods** (letter, then corrected, then retried as a mod): **10**, about 1 per 470 home row presses.
+  - 8 are left Shift. In every one, Shift was released **before** the shifted letter: a roll, not a nested
+    press. Shift went down, the letter went down about 99 ms later (median), and the two keys overlapped
+    for only about 14 ms (median).
+  - 2 are right Ctrl.
+  - The analyser files most of them under "Flow Tap" only because the gap from the previous key was under
+    100 ms. Shift is exempt from Flow Tap in that build, so the real cause is the roll.
+- **Those 8 rolls look exactly like normal typing.** 130 opposite-hand Shift rolls in the same period were
+  correctly letters. Their timing was the same: the letter came about 82 ms after Shift, with about 24 ms of
+  overlap.
+  - Any rule that turns the 8 into Shift (`HOLD_ON_OTHER_KEY_PRESS` for Shift, or a shorter tapping term)
+    turns most of the 130 into stray capitals.
+  - Across all mods, `HOLD_ON_OTHER_KEY_PRESS` would have changed 551 taps: 190 were followed by some
+    correction and 361 were not. For Cmd only, the split was 30 / 44.
+  - It is not enabled.
+- **Cmd and Opt allow-lists:** no missed same-hand shortcuts were recorded, so the lists stay as they are.
+- **Stray mods:** the analyser flagged 114 "mod, then Backspace within 2 s". Most are Shift (65), which is
+  ordinary capital-letter-then-typo editing rather than wrong decisions. No key stood out, so there is no
+  change there either.
+- **Decision:** keep the settings as they are (tapping term 200, Flow Tap 100 with Shift exempt, Permissive +
+  Chordal Hold, the Cmd and Opt allow-lists).
+  - The remaining Shift misses are a habit issue: keep Shift down until the letter is up.
+  - Caps Word (NAV + G) covers runs of capitals.
+  - If they keep bothering you, the next step is a layout change, not timing: Shift on a thumb key, or a
+    one-shot Shift.
 
 ### Verified behaviour (`make test:tsah_hrm`)
 
