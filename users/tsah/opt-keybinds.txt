@@ -13,5 +13,6 @@ O          open top notification
 P          new Chrome window, personal profile
 W          new Chrome window, work profile
 U          screenshot selection and share
+Q          close the focused window
 Space      window hints (thumb key: counts as either hand, no allow-list entry needed)
 # No Shift variants. Opt+arrows/Backspace and Opt+B/F/D/. stay unbound.

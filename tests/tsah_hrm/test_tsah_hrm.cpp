@@ -388,6 +388,33 @@ TEST_F(TsahHrm, same_hand_opt_keybind_nested_is_hold) {
     VERIFY_AND_CLEAR(driver);
 }
 
+// Left Opt/D with Q nested (same hand) -> Opt+Q (close window).
+TEST_F(TsahHrm, same_hand_left_opt_q_is_hold) {
+    TestDriver driver;
+    InSequence s;
+    auto alt_d = KeymapKey(0, 2, 1, LALT_T(KC_D));
+    auto q     = KeymapKey(0, 0, 0, KC_Q);
+    set_keymap({alt_d, q});
+
+    idle_for(500);
+    EXPECT_NO_REPORT(driver);
+    alt_d.press();
+    idle_for(40);
+    q.press();
+    idle_for(20);
+    VERIFY_AND_CLEAR(driver);
+
+    EXPECT_REPORT(driver, (KC_LALT));
+    EXPECT_REPORT(driver, (KC_LALT, KC_Q));
+    EXPECT_REPORT(driver, (KC_LALT));
+    EXPECT_EMPTY_REPORT(driver);
+    q.release();
+    run_one_scan_loop();
+    alt_d.release();
+    run_one_scan_loop();
+    VERIFY_AND_CLEAR(driver);
+}
+
 // Not on the Opt list (I): same-hand nested stays letters.
 TEST_F(TsahHrm, same_hand_opt_non_keybind_is_tap) {
     TestDriver driver;

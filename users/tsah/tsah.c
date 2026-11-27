@@ -42,6 +42,7 @@ static bool is_opt_keybind_key(uint16_t keycode) {
         case KC_L:
         case KC_O:
         case KC_P:
+        case KC_Q:
         case KC_U:
         case KC_W:
         case KC_X:
